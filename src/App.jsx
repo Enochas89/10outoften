@@ -267,6 +267,14 @@ export default function App() {
             <p className="font-medium text-stone-600">
               Lock in your next adventure. RSVP required for all gear-heavy trips.
             </p>
+            <a
+              href="https://license.gooutdoorstennessee.com/Event/Calendar.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-100"
+            >
+              View Tennessee Outdoor Events
+            </a>
           </div>
           <div className="flex items-center gap-4 rounded-xl border border-stone-200 bg-white p-2 shadow-sm">
             <button
