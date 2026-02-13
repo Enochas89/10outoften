@@ -346,7 +346,7 @@ export default function App() {
               <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </a>
             <a
-              href="#about"
+              href="#manifesto"
               className="rounded-xl border-2 border-stone-200 bg-white px-8 py-4 text-lg font-bold text-stone-800 transition-all hover:bg-stone-50"
             >
               Our Manifesto
@@ -383,6 +383,38 @@ export default function App() {
               <p className="leading-relaxed text-stone-600">{item.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id="manifesto" className="bg-white px-4 py-24">
+        <div className="mx-auto max-w-5xl rounded-3xl border border-stone-200 bg-stone-50 p-8 shadow-sm md:p-12">
+          <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-emerald-700">
+            Our Stated Manifesto
+          </p>
+          <h2 className="font-hero mb-6 text-4xl uppercase italic text-stone-900 md:text-5xl">
+            No Dad Left Behind
+          </h2>
+          <p className="mb-8 text-lg leading-relaxed text-stone-700">
+            We believe strong families are built outside. We show up for each other, train each
+            other, and pass real-world skills to the next generation.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              'Presence over phones: when we are out, we are all in.',
+              'Skill over ego: teach what you know and ask for help when you need it.',
+              'Stewardship over shortcuts: leave trails, rivers, and campsites better than we found them.',
+              'Brotherhood over isolation: check in, invite someone, make room for every dad.',
+              'Action over excuses: one planned trip beats ten saved posts.',
+              'Legacy over comfort: model courage, discipline, and respect for the outdoors.',
+            ].map((line) => (
+              <div
+                key={line}
+                className="rounded-xl border border-stone-200 bg-white p-4 text-sm font-semibold leading-relaxed text-stone-700"
+              >
+                {line}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
