@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/tennessee-events",
+      "destination": "https://license.gooutdoorstennessee.com/Event/Calendar.aspx/GetEvents"
+    }
+  ]
+}

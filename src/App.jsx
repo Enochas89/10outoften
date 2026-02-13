@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -17,44 +17,106 @@ import {
 
 const NAV_ITEMS = ['Home', 'Expeditions', 'About', 'Contact'];
 
-const INITIAL_EVENTS = [
+const FALLBACK_EVENTS = [
   {
-    id: 1,
+    id: 'fallback-1',
     date: new Date(2025, 1, 15),
     title: 'Summit & Sausage Sizzle',
     location: 'Eagle Peak',
     type: 'Hiking',
+    isClosed: false,
+    eventUrl: 'https://license.gooutdoorstennessee.com/Event/Calendar.aspx',
+    startsAtLabel: '2/15/2025',
   },
   {
-    id: 2,
+    id: 'fallback-2',
     date: new Date(2025, 1, 22),
     title: 'Dad & Lad Camping',
     location: 'Pine Ridge',
     type: 'Camping',
+    isClosed: false,
+    eventUrl: 'https://license.gooutdoorstennessee.com/Event/Calendar.aspx',
+    startsAtLabel: '2/22/2025',
   },
   {
-    id: 3,
+    id: 'fallback-3',
     date: new Date(2025, 2, 5),
     title: 'River Kayaking',
     location: 'Blue Creek',
     type: 'Water',
+    isClosed: false,
+    eventUrl: 'https://license.gooutdoorstennessee.com/Event/Calendar.aspx',
+    startsAtLabel: '3/5/2025',
   },
   {
-    id: 4,
+    id: 'fallback-4',
     date: new Date(2025, 2, 12),
     title: 'Wilderness First Aid 101',
     location: 'Clubhouse',
     type: 'Workshop',
+    isClosed: false,
+    eventUrl: 'https://license.gooutdoorstennessee.com/Event/Calendar.aspx',
+    startsAtLabel: '3/12/2025',
   },
 ];
 
+const TENNESSEE_EVENTS_ENDPOINT = '/api/tennessee-events';
+const TENNESSEE_EVENT_PAGE_PREFIX = 'https://license.gooutdoorstennessee.com/Event/ViewEvent.aspx?id=';
+
+function parseAspNetDate(dateValue) {
+  if (typeof dateValue !== 'string') return null;
+  const match = /\/Date\((\d+)\)\//.exec(dateValue);
+  if (!match) return null;
+  const timestamp = Number.parseInt(match[1], 10);
+  if (Number.isNaN(timestamp)) return null;
+  return new Date(timestamp);
+}
+
+function normalizeTennesseeEvents(events) {
+  if (!Array.isArray(events)) return [];
+
+  const normalizedEvents = [];
+
+  const pushEvent = (item, dateValue, suffix) => {
+    const date = parseAspNetDate(dateValue);
+    if (!date) return;
+
+    normalizedEvents.push({
+      id: `tn-${item.EventId}-${suffix}`,
+      date,
+      title: item.EventName || 'Untitled Event',
+      location: item.LocationName || item.City || 'Tennessee',
+      type: item.EventTypeDescription || 'Event',
+      isClosed: Boolean(item.IsApplicationClosed),
+      eventUrl: `${TENNESSEE_EVENT_PAGE_PREFIX}${item.EventId}`,
+      startsAtLabel: item.FullStart || '',
+    });
+  };
+
+  events.forEach((item) => {
+    pushEvent(item, item.StartDate, 'base');
+
+    const additionalDateRanges = item?.AdditionalDates?.AdditionalDates;
+    if (Array.isArray(additionalDateRanges)) {
+      additionalDateRanges.forEach((range, index) => {
+        pushEvent(item, range.AdditionalStartDate, `extra-${index}`);
+      });
+    }
+  });
+
+  return normalizedEvents;
+}
+
 export default function App() {
   const [currentDate, setCurrentDate] = useState(
-    new Date(INITIAL_EVENTS[0].date.getFullYear(), INITIAL_EVENTS[0].date.getMonth(), 1),
+    new Date(),
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState(null);
+  const [calendarEvents, setCalendarEvents] = useState(FALLBACK_EVENTS);
+  const [eventsStatus, setEventsStatus] = useState('idle');
+  const [eventsError, setEventsError] = useState('');
 
   const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
   const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
@@ -64,6 +126,65 @@ export default function App() {
 
   const nextMonth = () =>
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadEvents = async () => {
+      setEventsStatus('loading');
+      setEventsError('');
+
+      try {
+        const response = await fetch(TENNESSEE_EVENTS_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            month: currentDate.getMonth() + 1,
+            year: currentDate.getFullYear(),
+            eventtype: null,
+            location: null,
+            eventname: null,
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const normalizedEvents = normalizeTennesseeEvents(payload?.d);
+
+        setCalendarEvents(normalizedEvents);
+        setEventsStatus('success');
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        setCalendarEvents([]);
+        setEventsStatus('error');
+        setEventsError('Tennessee events are temporarily unavailable.');
+      }
+    };
+
+    loadEvents();
+
+    return () => controller.abort();
+  }, [currentDate]);
+
+  const monthEvents = useMemo(
+    () =>
+      calendarEvents
+        .filter((event) => {
+          const eventDate = event.date;
+          return (
+            eventDate.getMonth() === currentDate.getMonth() &&
+            eventDate.getFullYear() === currentDate.getFullYear()
+          );
+        })
+        .sort((a, b) => a.date - b.date),
+    [calendarEvents, currentDate],
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -93,7 +214,7 @@ export default function App() {
     }
 
     for (let day = 1; day <= totalDays; day += 1) {
-      const dayEvents = INITIAL_EVENTS.filter((event) => {
+      const dayEvents = calendarEvents.filter((event) => {
         const eventDate = event.date;
         return (
           eventDate.getDate() === day &&
@@ -109,15 +230,22 @@ export default function App() {
         >
           <span className="font-mono text-sm text-stone-400">{day}</span>
           <div className="mt-1 space-y-1">
-            {dayEvents.map((event) => (
+            {dayEvents.slice(0, 2).map((event) => (
               <div
                 key={event.id}
-                className="truncate rounded bg-emerald-600 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm md:text-xs"
-                title={`${event.title} - ${event.location}`}
+                className={`truncate rounded px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm md:text-xs ${
+                  event.isClosed ? 'bg-stone-400' : 'bg-emerald-600'
+                }`}
+                title={`${event.title} - ${event.location} (${event.type})`}
               >
                 {event.title}
               </div>
             ))}
+            {dayEvents.length > 2 && (
+              <div className="text-[10px] font-semibold text-stone-500 md:text-xs">
+                +{dayEvents.length - 2} more
+              </div>
+            )}
           </div>
         </div>,
       );
@@ -265,7 +393,7 @@ export default function App() {
               Expedition Calendar
             </h2>
             <p className="font-medium text-stone-600">
-              Lock in your next adventure. RSVP required for all gear-heavy trips.
+              Live events are synced from Tennessee Go Outdoors for the selected month.
             </p>
             <a
               href="https://license.gooutdoorstennessee.com/Event/Calendar.aspx"
@@ -309,14 +437,51 @@ export default function App() {
           {renderCalendar()}
         </div>
 
+        <div className="mt-5 rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+          {eventsStatus === 'loading' && (
+            <p className="text-sm font-semibold text-emerald-700">Loading Tennessee events...</p>
+          )}
+          {eventsStatus === 'error' && (
+            <p className="text-sm font-semibold text-red-600">{eventsError}</p>
+          )}
+          {eventsStatus === 'success' && monthEvents.length === 0 && (
+            <p className="text-sm font-semibold text-stone-600">
+              No Tennessee events listed for this month.
+            </p>
+          )}
+          {eventsStatus === 'success' && monthEvents.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-stone-700">
+                {monthEvents.length} Tennessee event(s) this month
+              </p>
+              <div className="grid gap-2 md:grid-cols-2">
+                {monthEvents.slice(0, 8).map((event) => (
+                  <a
+                    key={`list-${event.id}`}
+                    href={event.eventUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm transition-colors hover:border-emerald-300 hover:bg-emerald-50"
+                  >
+                    <p className="truncate font-bold text-stone-800">{event.title}</p>
+                    <p className="truncate text-xs text-stone-500">
+                      {event.startsAtLabel || event.date.toLocaleDateString()} - {event.location}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-stone-500">
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-emerald-600" />
-            Upcoming Expedition
+            Open Event
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-stone-300" />
-            Regular Meetup
+            <div className="h-3 w-3 rounded-full bg-stone-400" />
+            Registration Closed
           </div>
         </div>
       </section>
