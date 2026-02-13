@@ -326,7 +326,7 @@ export default function App() {
         <div className="mx-auto max-w-5xl text-center">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-1.5 text-sm font-bold text-emerald-700">
             <Sun className="h-4 w-4 text-emerald-500" />
-            <span>EST. 2024 - THE PREMIER OUTDOORS CLUB FOR DADS</span>
+            <span>EST. 2026 - THE PREMIER OUTDOORS CLUB FOR DADS</span>
           </div>
           <h1 className="font-hero mb-6 text-6xl leading-[0.9] tracking-tight text-stone-900 md:text-8xl">
             LESS SCREEN TIME.
