@@ -264,7 +264,7 @@ export default function App() {
                 <Mountain className="h-6 w-6 text-white" />
               </div>
               <span className="font-hero text-xl uppercase italic tracking-tight text-stone-900">
-                10/<span className="text-emerald-600">TN</span>
+                10TN <span className="text-emerald-600">Dads club</span>
               </span>
             </a>
 
@@ -617,7 +617,7 @@ export default function App() {
               <Mountain className="h-4 w-4 text-white" />
             </div>
             <span className="font-hero text-sm uppercase italic tracking-tight text-stone-900">
-              10/TN
+              10TN Dads club
             </span>
           </div>
           <div className="flex gap-8">
@@ -632,7 +632,7 @@ export default function App() {
             </a>
           </div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
-            (c) {new Date().getFullYear()} 10/TN. No dad left behind.
+            (c) {new Date().getFullYear()} 10TN Dads club. No dad left behind.
           </p>
         </div>
       </footer>
