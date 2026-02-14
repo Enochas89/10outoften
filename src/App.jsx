@@ -624,7 +624,13 @@ export default function App() {
             <a href="#" className="text-stone-400 transition-colors hover:text-emerald-600" aria-label="Instagram">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="#" className="text-stone-400 transition-colors hover:text-emerald-600" aria-label="Facebook">
+            <a
+              href="https://www.facebook.com/groups/1303217521702247/?ref=share&mibextid=NSMWBT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-400 transition-colors hover:text-emerald-600"
+              aria-label="Facebook"
+            >
               <Facebook className="h-5 w-5" />
             </a>
             <a href="#" className="text-stone-400 transition-colors hover:text-emerald-600" aria-label="Email">
