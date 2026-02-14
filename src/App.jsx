@@ -321,24 +321,25 @@ export default function App() {
         )}
       </nav>
 
-      <header id="home" className="relative overflow-hidden px-4 pb-24 pt-40">
-        <img
-          src="/10.tn.jpg"
-          alt="10TN Dads club outdoors header"
-          className="absolute inset-0 -z-20 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
+      <header id="home" className="relative overflow-hidden bg-white px-4 pb-24 pt-40">
         <div className="mx-auto max-w-5xl text-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/30 px-4 py-1.5 text-sm font-bold text-emerald-200 backdrop-blur-sm">
-            <Sun className="h-4 w-4 text-emerald-300" />
+          <div className="mb-8 overflow-hidden rounded-3xl border border-stone-200 shadow-xl shadow-stone-300/30">
+            <img
+              src="/10.tn.jpg"
+              alt="10TN Dads club outdoors header"
+              className="h-64 w-full object-cover md:h-96"
+            />
+          </div>
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-1.5 text-sm font-bold text-emerald-700">
+            <Sun className="h-4 w-4 text-emerald-500" />
             <span>EST. 2026 - THE PREMIER OUTDOORS CLUB FOR DADS</span>
           </div>
-          <h1 className="font-hero mb-6 text-6xl leading-[0.9] tracking-tight text-white md:text-8xl">
+          <h1 className="font-hero mb-6 text-6xl leading-[0.9] tracking-tight text-stone-900 md:text-8xl">
             LESS SCREEN TIME.
             <br />
-            <span className="text-emerald-300">MORE PEAK TIME.</span>
+            <span className="text-emerald-600">MORE PEAK TIME.</span>
           </h1>
-          <p className="mx-auto mb-10 max-w-2xl text-xl font-medium leading-relaxed text-stone-100">
+          <p className="mx-auto mb-10 max-w-2xl text-xl font-medium leading-relaxed text-stone-600">
             Building a community of fathers who value wilderness, adventure, and teaching the next
             generation that &quot;outdoorsy&quot; isn&apos;t just a vibe, it&apos;s a lifestyle.
           </p>
@@ -352,7 +353,7 @@ export default function App() {
             </a>
             <a
               href="#manifesto"
-              className="rounded-xl border-2 border-white/70 bg-white/15 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/25"
+              className="rounded-xl border-2 border-stone-200 bg-white px-8 py-4 text-lg font-bold text-stone-800 transition-all hover:bg-stone-50"
             >
               Our Manifesto
             </a>
